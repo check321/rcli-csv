@@ -2,6 +2,7 @@ use std::fs;
 use csv::Reader;
 use serde::{Deserialize, Serialize};
 use anyhow::Result;
+use serde_json::Value;
 
 #[derive(Debug, Serialize, Deserialize)]
 struct Film {
@@ -25,11 +26,17 @@ struct Film {
 
 pub fn csv_process(input: &str, output: &str) -> Result<()>{
     let mut reader = Reader::from_path(input)?;
-    let mut rs: Vec<Film> = Vec::with_capacity(250);
-    for result in reader.deserialize() {
-        let record: Film = result?;
-        rs.push(record);
-        // println!("{:?}", record);
+    let mut rs: Vec<Value> = Vec::with_capacity(250);
+    // for result in reader.deserialize() {
+    //     let record: Film = result?;
+    //     rs.push(record);
+    //     // println!("{:?}", record);
+    // }
+    let headers = reader.headers()?.clone();
+    for result in reader.records(){
+        let record = result?;
+        let json_value:Value = headers.iter().zip(record.iter()).collect::<Value>();
+        rs.push(json_value);
     }
 
     let json = serde_json::to_string_pretty(&rs)?;
