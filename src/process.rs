@@ -3,6 +3,7 @@ use csv::Reader;
 use serde::{Deserialize, Serialize};
 use anyhow::Result;
 use serde_json::Value;
+use crate::opts::OutputFormat;
 
 #[derive(Debug, Serialize, Deserialize)]
 struct Film {
@@ -24,7 +25,7 @@ struct Film {
     rating: f32,
 }
 
-pub fn csv_process(input: &str, output: &str) -> Result<()>{
+pub fn csv_process(input: &str, output: String,format: OutputFormat) -> Result<()>{
     let mut reader = Reader::from_path(input)?;
     let mut rs: Vec<Value> = Vec::with_capacity(250);
     // for result in reader.deserialize() {
@@ -39,8 +40,12 @@ pub fn csv_process(input: &str, output: &str) -> Result<()>{
         rs.push(json_value);
     }
 
-    let json = serde_json::to_string_pretty(&rs)?;
-    fs::write(output, json)?;
+    let content =  match format{
+        OutputFormat::Json => serde_json::to_string_pretty(&rs)?,
+        OutputFormat::Yaml => serde_yaml::to_string(&rs)?,
+    };
+
+    fs::write(output, content)?;
 
     Ok(())
 }
