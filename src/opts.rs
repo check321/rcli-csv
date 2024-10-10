@@ -15,6 +15,8 @@ pub struct Opts {
 pub enum SubCommand {
     #[command(about = "Convert CSV to JSON")]
     Csv(CsvOpts),
+    #[command(about = "Generate a random password")]
+    Genpass(GenPassOpts)
 }
 
 #[derive(Debug,Copy, Clone)]
@@ -40,6 +42,24 @@ pub struct CsvOpts {
     #[arg(long, default_value_t = OutputFormat::Json,value_parser=output_format_validator)]
     pub format: OutputFormat,
 
+}
+
+#[derive(Debug, Parser)]
+pub struct GenPassOpts{
+    #[arg(short, long,default_value_t=16)]
+    pub length: usize,
+
+    #[arg(long,default_value_t=true)]
+    pub uppercase:bool,
+
+    #[arg(long,default_value_t=true)]
+    pub lowercase:bool,
+
+    #[arg(long,default_value_t=true)]
+    pub number:bool,
+
+    #[arg(long,default_value_t=true)]
+    pub symbols: bool,
 }
 
 fn file_validator(filename: &str) -> Result<String, String> {
