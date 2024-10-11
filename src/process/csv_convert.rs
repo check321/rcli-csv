@@ -3,7 +3,7 @@ use csv::Reader;
 use serde::{Deserialize, Serialize};
 use anyhow::Result;
 use serde_json::Value;
-use crate::opts::OutputFormat;
+use crate::cli::OutputFormat;
 
 #[derive(Debug, Serialize, Deserialize)]
 struct Film {
