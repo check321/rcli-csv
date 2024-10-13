@@ -11,7 +11,6 @@ pub fn process_encode(input:&str, format:Base64Format) -> Result<()>{
     let mut buf = Vec::new();
     reader.read_to_end(&mut buf)?;
 
-    println!("{}",buf.len());
     let encoded = match format {
         Base64Format::Standard => STANDARD.encode(&buf),
         Base64Format::UrlSafe => URL_SAFE_NO_PAD.encode(&buf),
@@ -28,12 +27,13 @@ pub fn process_decode(input:&str, format:Base64Format)-> anyhow::Result<()>{
         Box::new(File::open(input)?)
     };
 
-    let mut buf = Vec::new();
-    reader.read_to_end(&mut buf)?;
+    let mut buf = String::new();
+    reader.read_to_string(&mut buf)?;
+    let buf = buf.trim();
 
     let decoded = match format {
         Base64Format::Standard => STANDARD.decode(&buf)?,
-        Base64Format::UrlSafe => URL_SAFE.decode(&buf)?,
+        Base64Format::UrlSafe => URL_SAFE_NO_PAD.decode(&buf)?,
     };
 
     let decoded = String::from_utf8(decoded)?;
