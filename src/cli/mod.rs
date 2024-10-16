@@ -4,7 +4,7 @@ mod base64;
 mod text;
 
 use std::fmt::{Display, Formatter};
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::str::FromStr;
 use clap::Parser;
 use crate::cli::csv::CsvOpts;
@@ -37,6 +37,15 @@ fn filename_parser(filename: &str) -> Result<String, String> {
         Ok(filename.into())
     } else {
         Err(format!("File {} does not exist", filename))
+    }
+}
+
+fn parse_output(output:&str) -> Result<PathBuf,&'static str>{
+    let p = Path::new(output);
+    if p.exists() && p.is_dir(){
+        Ok(output.into())
+    }else{
+        Err("Output must be a directory")
     }
 }
 

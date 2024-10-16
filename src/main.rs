@@ -1,5 +1,6 @@
+use std::fs;
 use clap::Parser;
-use rcli_csv::{csv_process, process_genpass, process_encode, process_decode, Opts, SubCommand, Base64SubCommand, TextSubCommand, TextSignFormat, process_sign,process_verify};
+use rcli_csv::{csv_process, process_genpass, process_encode, process_decode, Opts, SubCommand, Base64SubCommand, TextSubCommand, process_sign, process_verify, process_generate, TextSignFormat};
 
 fn main() -> anyhow::Result<()> {
     let opts: Opts = Opts::parse();
@@ -13,23 +14,43 @@ fn main() -> anyhow::Result<()> {
             csv_process(&opts.input, output, opts.format)?;
         }
         SubCommand::Genpass(opts) => {
-            process_genpass(opts.length as u8, opts.uppercase, opts.lowercase, opts.number, opts.symbols)?;
+           let password = process_genpass(opts.length as u8, opts.uppercase, opts.lowercase, opts.number, opts.symbols)?;
+            print!("{}",password);
         }
         SubCommand::Base64(subCmd) => match subCmd{
             Base64SubCommand::Encode(opts)=>{
-                process_encode(&opts.input,opts.format)?;
+               let encoded = process_encode(&opts.input,opts.format)?;
+                print!("{}",encoded);
             }
 
             Base64SubCommand::Decode(opts)=> {
-                process_decode(&opts.input,opts.format)?;
+                let decoded = process_decode(&opts.input,opts.format)?;
+                let decoded = String::from_utf8(decoded)?;
+                print!("{}",decoded);
             }
         },
         SubCommand::Text(subCmd) => match subCmd {
             TextSubCommand::Sign(opts) => {
-                process_sign(&opts.input, &opts.key,opts.format)?
+                let signed = process_sign(&opts.input, &opts.key,opts.format)?;
+                print!("{}", signed);
             }
             TextSubCommand::Verify(opts) => {
-                process_verify(&opts.input, &opts.key,&opts.signature,opts.format)?
+                let verified = process_verify(&opts.input, &opts.key,&opts.signature,opts.format)?;
+                print!("{}", verified);
+            }
+            TextSubCommand::GenerateKey(opts) => {
+                let key = process_generate(opts.format)?;
+                match opts.format{
+                    TextSignFormat::Blake3 => {
+                        let name = opts.output.join("blake3.key");
+                        fs::write(name,&key[0])?;
+                    }
+                    TextSignFormat::Ed25519 => {
+                        let name = &opts.output;
+                        fs::write(name.join("ed25519.sk"),&key[0])?;
+                        fs::write(name.join("ed25519.pk"),&key[1])?;
+                    }
+                }
             }
         }
     }

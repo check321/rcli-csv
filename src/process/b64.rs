@@ -4,7 +4,7 @@ use crate::{Base64Format,get_reader};
 use std::io::Read;
 use anyhow::Result;
 
-pub fn process_encode(input:&str, format:Base64Format) -> Result<()>{
+pub fn process_encode(input:&str, format:Base64Format) -> Result<String>{
 
     let mut reader = get_reader(input)?;
     let mut buf = Vec::new();
@@ -14,11 +14,10 @@ pub fn process_encode(input:&str, format:Base64Format) -> Result<()>{
         Base64Format::Standard => STANDARD.encode(&buf),
         Base64Format::UrlSafe => URL_SAFE_NO_PAD.encode(&buf),
     };
-    println!("{}",encoded);
-    Ok(())
+    Ok(encoded)
 }
 
-pub fn process_decode(input:&str, format:Base64Format)-> anyhow::Result<()>{
+pub fn process_decode(input:&str, format:Base64Format)-> anyhow::Result<Vec<u8>>{
 
     let mut reader = get_reader(input)?;
 
@@ -31,8 +30,6 @@ pub fn process_decode(input:&str, format:Base64Format)-> anyhow::Result<()>{
         Base64Format::UrlSafe => URL_SAFE_NO_PAD.decode(&buf)?,
     };
 
-    let decoded = String::from_utf8(decoded)?;
-    println!("{}",decoded);
-    Ok(())
+    Ok(decoded)
 }
 

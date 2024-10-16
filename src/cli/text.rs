@@ -1,8 +1,8 @@
 use std::fmt::{Display, Formatter};
+use std::path::PathBuf;
 use std::str::FromStr;
 use clap::Parser;
-use crate::Base64Format;
-use super::{filename_parser};
+use super::{filename_parser,parse_output};
 
 #[derive(Debug, Parser)]
 pub enum TextSubCommand {
@@ -10,6 +10,8 @@ pub enum TextSubCommand {
     Sign(TextSignOpts),
     #[command(about = "Verify a signed message.")]
     Verify(TextVerifyOpts),
+    #[command(about = "Generate a new key.")]
+    GenerateKey(TextKeyGenerateOpts),
 
 }
 
@@ -38,6 +40,14 @@ pub struct TextVerifyOpts {
     #[arg(long,default_value = "blake3",value_parser=parse_format)]
     pub format: TextSignFormat,
 
+}
+#[derive(Debug, Parser)]
+pub struct TextKeyGenerateOpts{
+    #[arg(long,default_value = "blake3",value_parser=parse_format)]
+    pub format: TextSignFormat,
+
+    #[arg(short,long,value_parser=parse_output)]
+    pub output: PathBuf,
 }
 
 #[derive(Debug,Copy,Clone)]
