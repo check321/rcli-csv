@@ -1,6 +1,7 @@
 mod csv;
 mod genpass;
 mod base64;
+mod text;
 
 use std::fmt::{Display, Formatter};
 use std::path::Path;
@@ -10,7 +11,7 @@ use crate::cli::csv::CsvOpts;
 use crate::cli::genpass::GenPassOpts;
 
 
-pub use self::{csv::OutputFormat, base64::{Base64Format,Base64SubCommand}};
+pub use self::{csv::OutputFormat, base64::{Base64Format,Base64SubCommand},text::{TextSubCommand,TextSignFormat}};
 
 #[derive(Parser, Debug)]
 #[command(name = "rcli-csv", author, version, about)]
@@ -27,6 +28,8 @@ pub enum SubCommand {
     Genpass(GenPassOpts),
     #[command(subcommand)]
     Base64(Base64SubCommand),
+    #[command(subcommand)]
+    Text(TextSubCommand),
 }
 
 fn filename_parser(filename: &str) -> Result<String, String> {

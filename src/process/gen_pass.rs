@@ -39,7 +39,7 @@ pub fn process_genpass(length: u8, upper: bool, lower: bool, number: bool, symbo
     password.shuffle(&mut rng);
     let password = String::from_utf8(password)?;
 
-    println!("{}",password);
+    print!("{}",password);
 
     Ok(())
 
