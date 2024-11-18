@@ -187,9 +187,9 @@ impl Ed25519Signer {
 }
 
 impl Ed25519Verifier {
-    pub fn new(key: VerifyingKey) -> Self {
-        Self { key }
-    }
+    // pub fn new(key: VerifyingKey) -> Self {
+    //     Self { key }
+    // }
     pub fn try_new(key: impl AsRef<[u8]>) -> Result<Self> {
         let key = key.as_ref();
         let key = (&key[..32]).try_into()?;

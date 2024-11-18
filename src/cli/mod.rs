@@ -2,16 +2,15 @@ mod csv;
 mod genpass;
 mod base64;
 mod text;
+mod http;
 
-use std::fmt::{Display, Formatter};
 use std::path::{Path, PathBuf};
-use std::str::FromStr;
 use clap::Parser;
 use crate::cli::csv::CsvOpts;
 use crate::cli::genpass::GenPassOpts;
 
 
-pub use self::{csv::OutputFormat, base64::{Base64Format,Base64SubCommand},text::{TextSubCommand,TextSignFormat}};
+pub use self::{csv::OutputFormat, base64::{Base64Format,Base64SubCommand},text::{TextSubCommand,TextSignFormat},http::HttpSubCommand};
 
 #[derive(Parser, Debug)]
 #[command(name = "rcli-csv", author, version, about)]
@@ -30,6 +29,8 @@ pub enum SubCommand {
     Base64(Base64SubCommand),
     #[command(subcommand)]
     Text(TextSubCommand),
+    #[command(subcommand)]
+    Http(HttpSubCommand),
 }
 
 fn filename_parser(filename: &str) -> Result<String, String> {

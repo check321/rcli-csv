@@ -1,4 +1,4 @@
-use base64::engine::general_purpose::{STANDARD, URL_SAFE, URL_SAFE_NO_PAD};
+use base64::engine::general_purpose::{STANDARD, URL_SAFE_NO_PAD};
 use base64::prelude::*;
 use crate::{Base64Format,get_reader};
 use std::io::Read;
