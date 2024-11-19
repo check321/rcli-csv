@@ -8,6 +8,7 @@ use axum::http::StatusCode;
 use axum::Router;
 use axum::routing::get;
 use log::warn;
+use tower_http::services::ServeDir;
 
 #[derive(Debug)]
 struct HttpServeState{
@@ -15,10 +16,19 @@ struct HttpServeState{
 }
 pub async fn process_http_serve(path: PathBuf, port: u16) -> Result<()>{
 
-    let state = HttpServeState{path};
+    let state = HttpServeState{path: path.clone()};
+
+    let dir_service = ServeDir::new(path)
+        .append_index_html_on_directories(true)
+        .precompressed_gzip()
+        .precompressed_br()
+        .precompressed_deflate()
+        .precompressed_zstd();
+
     let router = Router::new()
-        .route("/*path",get(file_handler)
-            .with_state(Arc::new(state)));
+        // .route("/*path",get(file_handler))
+        .nest_service("/tower",dir_service)
+            .with_state(Arc::new(state));
 
     let addr = SocketAddr::from(([0,0,0,0],port));
     info!("Serving {:?} on port [{}]",addr,port);
